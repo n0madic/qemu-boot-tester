@@ -1,8 +1,9 @@
 #NoTrayIcon
-#region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=1021.ico
+#AutoIt3Wrapper_UseUpx=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=asInvoker
-#endregion ;**** Directives created by AutoIt3Wrapper_GUI ****
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #include <ButtonConstants.au3>
 #include <ComboConstants.au3>
 #include <EditConstants.au3>
@@ -11,7 +12,7 @@
 #include <WindowsConstants.au3>
 #include <String.au3>
 
-Global $qemu_exe = @ScriptDir & '\qemu\qemu.exe'
+Global $qemu_exe = @ScriptDir & '\qemu\qemu-system-i386w.exe'
 Global $qemu_dir = @ScriptDir & '\qemu'
 Global $stdout = @ScriptDir & '\qemu\stdout.txt'
 Global $stderr = @ScriptDir & '\qemu\stderr.txt'
@@ -218,13 +219,11 @@ While 1
 			Else
 				GUICtrlSetState($LabelNotFound, $GUI_HIDE)
 				If (GUICtrlRead($RadioDrive) = $GUI_CHECKED) And (Not IsAdmin()) And ($cdrom = "") Then
-					$objShell = ObjCreate("Shell.Application")
-					$objShell.ShellExecute($qemu_exe, '-name "Boot Disk Tester" -L . ' & $commandline, $qemu_dir, "runas", @SW_HIDE)
-					ProcessWaitClose("qemu.exe")
+					ShellExecuteWait($qemu_exe, '-name "Boot Disk Tester" -L . ' & $commandline, $qemu_dir, "runas")
 				Else
-					RunWait($qemu_exe & ' -name "Boot Disk Tester" -L . ' & $commandline, $qemu_dir, @SW_HIDE)
-					If @error <> 0 Then MsgBox(16, "Error", "Problem with execute QEMU!")
+					RunWait($qemu_exe & ' -name "Boot Disk Tester" -L . ' & $commandline, $qemu_dir)
 				EndIf
+				If @error <> 0 Then MsgBox(16, "Error", "Problem with execute QEMU!")
 				If $snapshot = $GUI_CHECKED Then FileDelete(@TempDir & "\qem*.tmp")
 				If FileExists($stderr) Then
 					$stderr_msg = FileRead($stderr)
